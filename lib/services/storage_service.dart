@@ -1,7 +1,5 @@
 import 'dart:convert';
-
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../features/game/models/cell.dart';
 import '../features/game/models/game_state.dart';
 import '../features/game/models/game_status.dart';
@@ -13,6 +11,7 @@ class StorageService {
   static const _highScoreKey = 'high_score';
   static const _soundEnabledKey = 'sound_enabled';
   static const _vibrationEnabledKey = 'vibration_enabled';
+  static const leaderboardMaxEntries = 10;
 
   /// 是否存在可继续的进行中存档
   Future<bool> hasSavedGame() async {
@@ -70,9 +69,7 @@ class StorageService {
       'score': state.score,
       'status': state.status.name,
       'board': state.board
-          .map(
-            (row) => row.map((cell) => cell.color?.name).toList(),
-          )
+          .map((row) => row.map((cell) => cell.color?.name).toList())
           .toList(),
     };
   }

@@ -12,7 +12,7 @@ final _router = GoRouter(
     GoRoute(
       path: '/game/result',
       builder: (context, state) => ResultScreen(score: 0),
-    ), // TODO: 将分数保存在游戏状态中并传递分数
+    ),
   ],
 );
 
