@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-
+import 'package:go_router/go_router.dart';
 import '../../services/storage_service.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
+
+  static final StorageService _storage = StorageService();
 
   @override
   Widget build(BuildContext context) {
@@ -17,19 +19,14 @@ class HomePage extends StatelessWidget {
             const SizedBox(height: 48),
             _MenuButton(
               label: '开始游戏',
-              onPressed: () {
-                // TODO: 清除存档并跳转游戏页
+              onPressed: () async {
+                await _storage.clearSavedGame(); // 先清档
+                if (!context.mounted) return;
+                context.go('/game'); // 再跳转游戏页（游戏页内部会根据是否存在档案来判断是新游戏还是继续游戏）
               },
             ),
             const SizedBox(height: 16),
-            const _ContinueGameButton(),
-            const SizedBox(height: 16),
-            _MenuButton(
-              label: '排行榜',
-              onPressed: () {
-                // TODO: 跳转排行榜页
-              },
-            ),
+            const _ContinueGameButton(), // 继续游戏
           ],
         ),
       ),
@@ -59,7 +56,7 @@ class _ContinueGameButtonState extends State<_ContinueGameButton> {
 
   Future<void> _loadContinueState() async {
     final canContinue = await _storage.hasSavedGame();
-    if (!context.mounted) return;
+    if (!mounted) return;
     setState(() {
       _canContinue = canContinue;
       _loading = false;
@@ -68,8 +65,8 @@ class _ContinueGameButtonState extends State<_ContinueGameButton> {
 
   Future<void> _onContinuePressed() async {
     final game = await _storage.loadGame();
-    if (!context.mounted || game == null) return;
-    // TODO: 携带 game 跳转游戏页
+    if (game == null || !mounted) return;
+    context.go('/game/continue');
   }
 
   @override
