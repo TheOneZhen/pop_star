@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../services/storage_service.dart';
 
+/// 游戏首页：展示标题、最高分、开始/继续游戏与设置入口。
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
@@ -10,31 +12,61 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text('消灭星星', style: Theme.of(context).textTheme.headlineLarge),
-            const SizedBox(height: 48),
-            _MenuButton(
-              label: '开始游戏',
-              onPressed: () async {
-                await _storage.clearSavedGame(); // 先清档
-                if (!context.mounted) return;
-                context.go('/game'); // 再跳转游戏页（游戏页内部会根据是否存在档案来判断是新游戏还是继续游戏）
-              },
-            ),
-            const SizedBox(height: 16),
-            const _ContinueGameButton(), // 继续游戏
-          ],
+      body: Container(
+        decoration: AppBackground.decoration,
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                '消灭星星',
+                style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+              const SizedBox(height: 16),
+              FutureBuilder<int>(
+                future: _storage.getHighScore(),
+                builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
+                  final int highScore = snapshot.data ?? 0;
+                  return Text(
+                    '最高分: $highScore',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: Colors.white70,
+                        ),
+                  );
+                },
+              ),
+              const SizedBox(height: 48),
+              _MenuButton(
+                label: '开始游戏',
+                onPressed: () async {
+                  await _storage.clearSavedGame();
+                  if (!context.mounted) {
+                    return;
+                  }
+                  context.go('/game');
+                },
+              ),
+              const SizedBox(height: 16),
+              const _ContinueGameButton(),
+              const SizedBox(height: 16),
+              _MenuButton(
+                label: '设置',
+                onPressed: () {
+                  context.go('/settings');
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-/// 继续游戏：启动时读取本地存档，无存档则置灰
+/// 继续游戏按钮：无存档时禁用。
 class _ContinueGameButton extends StatefulWidget {
   const _ContinueGameButton();
 
@@ -55,25 +87,30 @@ class _ContinueGameButtonState extends State<_ContinueGameButton> {
   }
 
   Future<void> _loadContinueState() async {
-    final canContinue = await _storage.hasSavedGame();
-    if (!mounted) return;
+    final bool canContinue = await _storage.hasSavedGame();
+    if (!mounted) {
+      return;
+    }
     setState(() {
       _canContinue = canContinue;
       _loading = false;
     });
   }
 
-  Future<void> _onContinuePressed() async {
-    final game = await _storage.loadGame();
-    if (game == null || !mounted) return;
+  void _onContinuePressed() {
     context.go('/game/continue');
   }
 
   @override
   Widget build(BuildContext context) {
+    VoidCallback? onPressed;
+    if (!_loading && _canContinue) {
+      onPressed = _onContinuePressed;
+    }
+
     return _MenuButton(
       label: '继续游戏',
-      onPressed: _loading || !_canContinue ? null : _onContinuePressed,
+      onPressed: onPressed,
     );
   }
 }
@@ -88,7 +125,25 @@ class _MenuButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: 200,
-      child: FilledButton(onPressed: onPressed, child: Text(label)),
+      child: FilledButton(
+        onPressed: onPressed,
+        child: Text(label),
+      ),
+    );
+  }
+}
+
+/// 首页与游戏页共用的渐变背景装饰。
+class AppBackground {
+  AppBackground._();
+
+  static BoxDecoration get decoration {
+    return const BoxDecoration(
+      gradient: LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [Color(0xFF1A237E), Color(0xFF311B92)],
+      ),
     );
   }
 }
