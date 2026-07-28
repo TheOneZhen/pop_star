@@ -1,9 +1,3 @@
-# pop_star
-
-a simple game.
-
-## How to run?
-
 ### 使用mumu模拟器
 
 `adb connect 127.0.0.1:7555`，一般默认窗口都是这个，然后执行`flutter devices`可以看到虚拟设备（可以看`127.0.0.1:7555`那个设备叫什么，我这边叫`V2199GA`），然后执行`flutter run -d V2199GA`，就能使用mumu模拟器调试程序了。
