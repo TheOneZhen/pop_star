@@ -1,17 +1,11 @@
 # pop_star
 
-A new Flutter project.
+a simple game.
 
-## Getting Started
+## How to run?
 
-This project is a starting point for a Flutter application.
+### 使用mumu模拟器
 
-A few resources to get you started if this is your first Flutter project:
+`adb connect 127.0.0.1:7555`，一般默认窗口都是这个，然后执行`flutter devices`可以看到虚拟设备（可以看`127.0.0.1:7555`那个设备叫什么，我这边叫`V2199GA`），然后执行`flutter run -d V2199GA`，就能使用mumu模拟器调试程序了。
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+> 木木模拟器环境要比Google那个好用很多，最主要的是Android可以调整版本，调整窗口。

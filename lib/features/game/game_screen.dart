@@ -91,7 +91,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
             TextButton(
               onPressed: () {
                 Navigator.of(dialogContext).pop();
-                context.go('/');
+                context.go('/home');
               },
               child: const Text('返回首页'),
             ),
@@ -149,7 +149,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                         ),
                         TextButton(
                           onPressed: () {
-                            context.go('/');
+                            context.go('/home');
                           },
                           child: const Text('首页'),
                         ),
